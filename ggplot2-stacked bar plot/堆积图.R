@@ -1,0 +1,179 @@
+setwd("D:/R/exercise/ggplot2-stacked bar plot")
+getwd()
+
+if (!require("pacman")) install.packages("pacman")
+p_load(ggplot2, ggthemes, dplyr, readr, scales, forcats)
+chilean_exports <- "year,product,export,percentage
+2006,copper,4335009500,81
+2006,others,1016726518,19
+2007,copper,9005361914,86
+2007,others,1523085299,14
+2008,copper,6907056354,80
+2008,others,1762684216,20
+2009,copper,10529811075,81
+2009,others,2464094241,19
+2010,copper,14828284450,85
+2010,others,2543015596,15
+2011,copper,15291679086,82
+2011,others,3447972354,18
+2012,copper,14630686732,80
+2012,others,3583968218,20
+2013,copper,15244038840,79
+2013,others,4051281128,21
+2014,copper,14703374241,78
+2014,others,4251484600,22
+2015,copper,13155922363,78
+2015,others,3667286912,22
+"
+exports_data <- read_csv(chilean_exports)
+
+p4 <- ggplot(aes(y = percentage, x = year, fill = product), data = exports_data) +
+  geom_col()
+p4
+
+p4 <- ggplot(aes(y = percentage, x = year, fill = fct_rev(product)),
+             data = exports_data) +
+  geom_col()
+p4
+
+# adding data labels
+p4 <- p4 + geom_text(data = exports_data, aes(x = year, y = percentage,
+                                              label = paste0(percentage,"%")), size = 4)
+p4
+
+# Adjusting data labels position
+p4 <- ggplot(aes(y = percentage, x = year, fill = fct_rev(product)),
+             data = exports_data) +
+  geom_col()
+p4 <- p4 + geom_text(aes(label = paste0(percentage,"%")),
+                     position = position_stack(vjust = 0.5), size = 4)
+p4
+
+# Adjusting legend position
+p4 <- p4 + theme(legend.position = "bottom", legend.direction = "horizontal",
+                 legend.title = element_blank())
+p4
+
+# Changing variables display
+exports_data <- exports_data %>%
+  mutate(product = factor(product, levels = c("copper","others"),
+                          labels = c("Copper ","Pulp wood, Fruit, Salmon & Others")))
+p4 <- ggplot(aes(y = percentage, x = year, fill = fct_rev(product)),
+             data = exports_data) +
+  geom_col() +
+  geom_text(aes(label = paste0(percentage,"%")),
+            position = position_stack(vjust = 0.5), size = 4) +
+  theme(legend.position = "bottom", legend.direction = "horizontal", legend.title =
+          element_blank()) +
+  guides(fill = guide_legend(reverse = T))
+p4
+
+# Adjusting x-axis scale
+p4 <- p4 + scale_x_continuous(breaks = seq(2006,2015,1))
+p4
+
+# Adjusting axis, title & units
+p4 <- p4 +
+  labs(title = "Composition of Exports to China ($)",
+       subtitle = "Source: The Observatory of Economic Complexity") +
+  labs(x = "Year", y = "Percentage") +
+  scale_y_continuous(labels = dollar_format(suffix = "%", prefix = ""))
+p4
+
+# Adjusting color palette
+fill <- c("#E1B378","#5F9EA0")
+p4 <- p4 + scale_fill_manual(values = fill)
+p4
+
+# Using the white theme
+p4 <- ggplot(aes(y = percentage, x = year, fill = fct_rev(product)),
+             data = exports_data) +
+  geom_col() +
+  geom_text(aes(label = paste0(percentage,"%")),
+            position = position_stack(vjust = 0.5), size = 4) +
+  scale_x_continuous(breaks = seq(2006,2015,1)) +
+  scale_y_continuous(labels = dollar_format(suffix = "%", prefix = "")) +
+  labs(title = "Composition of Exports to China ($)",
+       subtitle = "Source: The Observatory of Economic Complexity") +
+  labs(x = "Year", y = "Percentage") +
+  theme_bw() +
+  theme(legend.position = "bottom",
+        legend.direction = "horizontal",
+        legend.title = element_blank()) +
+  guides(fill = guide_legend(reverse = T))
+p4
+
+# Using ‘The Economist’ theme
+fill <- c("#00a3dc","#01526d")
+p4 <- ggplot(aes(y = percentage, x = year, fill = fct_rev(product)),
+             data = exports_data) +
+  geom_col() +
+  geom_text(aes(label = paste0(percentage,"%")),
+            position = position_stack(vjust = 0.5), colour = "white",
+            family = "Roboto Condensed", size = 4) +
+  scale_x_continuous(breaks = seq(2006,2015,1)) +
+  scale_y_continuous(labels = dollar_format(suffix = "%", prefix = "")) +
+  labs(title = "Composition of Exports to China ($)",
+       subtitle = "Source: The Observatory of Economic Complexity") +
+  labs(x = "Year", y = "Percentage") +
+  theme_economist() + scale_fill_manual(values = fill) +
+  theme(axis.line.x = element_line(size = .5, colour = "black"),
+        legend.position = "bottom",
+        legend.direction = "horizontal",
+        legend.title = element_blank(),
+        plot.title = element_text(family = "Roboto Condensed"),
+        text = element_text(family = "Roboto Condensed")) +
+  guides(fill = guide_legend(reverse = T))
+p4
+
+# Using ‘Five Thirty Eight’ theme
+fill <- c("#f80a1c","#338cd3")
+p4 <- ggplot(aes(y = percentage, x = year, fill = fct_rev(product)),
+             data = exports_data) +
+  geom_col() +
+  geom_text(aes(label = paste0(percentage,"%")),
+            position = position_stack(vjust = 0.5), colour = "white",
+            family = "DecimaMonoPro-Bold", size = 4) +
+  scale_x_continuous(breaks = seq(2006,2015,1)) +
+  scale_y_continuous(labels = dollar_format(suffix = "%", prefix = "")) +
+  labs(title = "Composition of Exports to China ($)",
+       subtitle = "Source: The Observatory of Economic Complexity") +
+  labs(x = "Year", y = "Percentage") +
+  theme_fivethirtyeight() + scale_fill_manual(values = fill) +
+  theme(axis.title = element_text(family = "Atlas Grotesk Regular"),
+        legend.position = "bottom", legend.direction = "horizontal",
+        legend.title = element_blank(),
+        plot.title = element_text(family = "Atlas Grotesk Medium"),
+        legend.text = element_text(family = "Atlas Grotesk Regular"),
+        text = element_text(family = "Decima Mono Pro")) +
+  guides(fill = guide_legend(reverse = T))
+p4
+
+# Creating my own theme
+fill <- c("#b2d183","#40b8d0")
+p4 <- ggplot(aes(y = percentage, x = year, fill = fct_rev(product)),
+             data = exports_data) +
+  geom_col() +
+  geom_text(aes(label = paste0(percentage,"%")),
+            position = position_stack(vjust = 0.5), colour = "black",
+            family = "Tahoma", size = 4) +
+  scale_x_continuous(breaks = seq(2006,2015,1)) +
+  scale_y_continuous(labels = dollar_format(suffix = "%", prefix = "")) +
+  labs(title = "Composition of Exports to China ($)",
+       subtitle = "Source: The Observatory of Economic Complexity") +
+  labs(x = "Year", y = "Percentage") +
+  scale_fill_manual(values = fill) +
+  theme(panel.border = element_rect(colour = "black", fill = NA, size = .5),
+        axis.text.x = element_text(colour = "black", size = 10),
+        axis.text.y = element_text(colour = "black", size = 10),
+        legend.key = element_rect(fill = "white", colour = "white"),
+        legend.position = "bottom", legend.direction = "horizontal",
+        legend.title = element_blank(),
+        panel.grid.major = element_line(colour = "#d3d3d3"),
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(),
+        plot.title = element_text(size = 14, family = "Tahoma", face = "bold"),
+        text = element_text(family = "Tahoma")) +
+  guides(fill = guide_legend(reverse = T))
+p4
+
